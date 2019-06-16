@@ -1,0 +1,56 @@
+class unionfind
+{
+    int size;
+    int numberofcomponents;
+    public:
+    int *arrp;
+    vector<int>sz;
+    unionfind(int size)
+    {
+        numberofcomponents=size;
+        arrp=new int[size+1];
+        sz.push_back(0);
+        for(int i=1;i<=size;i++)
+        {
+            arrp[i]=i;
+            sz.push_back(1);
+        }
+    }
+    
+    int find(int p)
+    {
+        int root=p;
+        while(p!=arrp[p])
+        {
+            p=arrp[p];
+        }
+        
+        //path compression
+        while(p!=root)
+        {
+            int temp=root;
+            root=arrp[temp];
+            arrp[temp]=p;
+        }
+        return p;
+    }
+    
+    void unify(int a,int b)
+    {
+        int one=find(a);
+        int two=find(b);
+        
+        //smaller will unify with bigger set
+        if(sz[one]>sz[two])
+        {
+            arrp[two]=arrp[one];
+            sz[one]+=sz[two];
+        }
+        else
+        {
+            arrp[one]=arrp[two];
+            sz[two]+=sz[one];
+        }
+        numberofcomponents--;
+    }
+};
