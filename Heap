@@ -1,4 +1,3 @@
-
 class heap{
     int size;
     int maxsize;
@@ -28,8 +27,8 @@ class heap{
     }
     void minheapify(int index)
     {
-        int l=left(index);
-        int r=right(index);
+        int l=leftchildIndex(index);
+        int r=rightchildIndex(index);
         int smallindex=index;
         if(heapdata[l]<heapdata[index] && l<size)
         {
@@ -48,8 +47,8 @@ class heap{
 
     void maxheapify(int index)
     {
-        int l=left(index);
-        int r=right(index);
+        int l=leftchildIndex(index);
+        int r=rightchildIndex(index);
         int largeindex=index;
         if(heapdata[l]>heapdata[index] && l<size)
         {
@@ -59,7 +58,7 @@ class heap{
         {
             largeindex=r;
         }
-        if(smallindex!=index)
+        if(largeindex!=index)
         {
             swap(heapdata[index],heapdata[largeindex]);
             minheapify(largeindex);
@@ -102,9 +101,10 @@ class heap{
         }else return;
     }
 
-    void delete(int key)
+    void Heapdelete(int key)
     {
-        for(int i=0;i<size;i++)
+        int i;
+        for(i=0;i<size;i++)
         {
             if(heapdata[i]==key)
             break;
