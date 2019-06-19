@@ -39,7 +39,7 @@ class unionfind
     {
         int one=find(a);
         int two=find(b);
-        
+        if(one==two)return;
         //smaller will unify with bigger set
         if(sz[one]>sz[two])
         {
