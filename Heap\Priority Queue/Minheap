@@ -1,0 +1,112 @@
+class heap{
+    int size;
+    int maxsize;
+    vector<int>heapdata;
+    public:
+    int returnsize(){
+        return size;
+    }
+    int leftchildIndex(int i)
+    {
+        return (2*i)+1;
+    }
+    
+    int rightchildIndex(int i)
+    {
+        return (2*i)+2;
+    }
+
+    int parent(int i)
+    {
+        if(i==0)return 0;
+        else
+        return floor((i-1)/2);
+    }
+    heap(int mxsz)
+    {
+        size=0;
+        maxsize=mxsz;
+        heapdata=vector<int>(maxsize);
+    }
+    heap(vector<int>&vec)
+    {
+        size=vec.size();
+        maxsize=1000001;
+        heapdata=vec;
+        buildminheap();
+    }
+    void minheapify(int index)
+    {
+        int l=leftchildIndex(index);
+        int r=rightchildIndex(index);
+        int smallindex=index;
+        if(heapdata[l]<heapdata[index] && l<size)
+        {
+            smallindex=l;
+        }
+        if(heapdata[r]<heapdata[smallindex] && r<size)
+        {
+            smallindex=r;
+        }
+        if(smallindex!=index)
+        {
+            swap(heapdata[index],heapdata[smallindex]);
+            minheapify(smallindex);
+        }
+    }
+
+    void buildminheap()
+    {
+        for(int i=floor(size/2)-1;i>=0;i--)
+        {
+            minheapify(i);
+        }
+    }
+    
+    void decrease_key(int index)
+    {
+        while(heapdata[parent(index)]<heapdata[index])
+        {
+            swap(heapdata[parent(index)],heapdata[index]);
+            index=parent(index);
+            if(index==0)return;
+        }
+    }
+
+    void insert(int key)
+    {
+        if(size<maxsize)
+        {
+            heapdata[size]=key;
+            increase_key(size);
+            size++;
+        }else return;
+    }
+
+    void Heapdelete(int key)
+    {
+        int i;
+        for(i=0;i<size;i++)
+        {
+            if(heapdata[i]==key)
+            break;
+        }
+        swap(heapdata[i],heapdata[size-1]);
+        size--;
+        minheapify(i);
+    }
+
+    int Extract_min()
+    {
+        int a=heapdata[0];
+        swap(heapdata[size-1],heapdata[0]);
+        size--;
+        minheapify(0);
+        return a;
+    }
+
+    int min()
+    {
+        return heapdata[0];
+    }
+};
