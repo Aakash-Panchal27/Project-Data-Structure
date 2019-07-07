@@ -1,0 +1,371 @@
+//Name	:Aakash Panchal
+//ID	:201801459
+//Date	:02/04/2019
+//Program	: Implementation of Queue using Linked List
+
+#include <iostream>
+using namespace std;
+
+template<typename E>
+struct node {
+	E data;
+	node<E>* nextElement;
+};
+
+template <typename E>
+class linkList
+{
+public:
+	node<E>*firstElement;
+	node<E>*lastElement;
+	node<E>*currentElement;
+	int sizeofList;
+	int currentLocation;
+
+	//constructors and destructors
+
+	linkList()
+	{
+		firstElement = lastElement = currentElement = new node < E >;
+		firstElement = lastElement = currentElement = NULL;
+		currentLocation = 0;
+		sizeofList = 0;
+	}
+	~linkList()
+	{
+		while (firstElement != NULL)
+		{
+			currentElement = firstElement;
+			firstElement = firstElement->nextElement;
+			delete currentElement;
+		}
+	}
+
+	int NumberOfElements() const
+	{
+		return sizeofList;
+	}
+
+	int CurrentLocation() const
+	{
+		return currentLocation;
+	}
+
+	const E& getData() const
+	{
+		int i{ currentLocation };
+		node<E>*temp = new node<E>;
+		temp = firstElement;
+		while (i-- > 1)
+		{
+			temp = temp->nextElement;
+		}
+		return temp->data;
+	}
+
+	void clear()
+	{
+		while (firstElement != NULL)
+		{
+			currentElement = firstElement;
+			firstElement = firstElement->nextElement;
+			delete currentElement;
+		}
+		firstElement = currentElement = lastElement = NULL;
+		sizeofList = 0;
+		currentLocation = 0;
+	}
+
+	void insert(const E& data)
+	{
+		node<E>*p = new node<E>;
+		p->data = data;
+		sizeofList++;
+		if (currentElement == firstElement)
+		{
+			if (firstElement == NULL && lastElement == NULL)
+			{
+				lastElement = p;
+			}
+			p->nextElement = firstElement;
+			currentElement = p;
+			firstElement = p;
+			currentLocation = 1;
+			return;
+		}
+		node<E>* tN = new node<E>;
+		tN = firstElement;
+		while (tN->nextElement != currentElement)
+		{
+			tN = tN->nextElement;
+		}
+		tN->nextElement = p;
+		p->nextElement = currentElement;
+		currentElement = p;
+	}
+
+	void append(const E& data)
+	{
+		node<E>* k = new node<E>;
+		k->data = data;
+		k->nextElement = NULL;
+		if (sizeofList == 0)
+		{
+			firstElement = k;
+			currentElement = k;
+			lastElement = k;
+			sizeofList++;
+			currentLocation = 1;
+		}
+		else {
+			lastElement->nextElement = k;
+			lastElement = k;
+			sizeofList++;
+		}
+	}
+
+	E remove()
+	{
+		node<E>*rmv = new node<E>;
+		E removed{ currentElement->data };
+		rmv = firstElement;
+		int lo{ 1 };
+		while (lo++ < currentLocation - 1)
+		{
+			rmv = rmv->nextElement;
+		}
+		if (sizeofList == 1)
+		{
+			currentElement = firstElement = lastElement = NULL;
+			sizeofList = 0;
+			currentLocation = 0;
+		}
+		else if (currentLocation == 1 && sizeofList != 1) {
+			firstElement = currentElement->nextElement;
+			currentElement = firstElement;
+			sizeofList--;
+		}
+		else {
+			rmv->nextElement = currentElement->nextElement;
+			currentElement = rmv->nextElement;
+			sizeofList--;
+		}
+		if (currentLocation == sizeofList + 1) {
+			setToNewLocation(currentLocation - 1);
+		}
+		return removed;
+	}
+
+	void setListLocationToStart()
+	{
+		setToNewLocation(1);
+	}
+
+	void setListLocationToEnd()
+	{
+		setToNewLocation(sizeofList);
+	}
+
+	void previousElement()
+	{
+		setToNewLocation(currentLocation - 1);
+	}
+
+	void nextElement()
+	{
+		setToNewLocation(currentLocation + 1);
+	}
+
+	int setToNewLocation(int location)
+	{
+		currentLocation = location;
+		int i{ 1 };
+		currentElement = firstElement;
+		while (i++ < currentLocation)
+		{
+			currentElement = currentElement->nextElement;
+		}
+		return currentLocation;
+	}
+
+	void print()
+	{
+		if (sizeofList == 0)
+		{
+			cout << "\nLinked List has no nodes, it's empty" << endl;
+		}
+		else {
+			node<E>* pr = new node<E>;
+			pr = firstElement;
+			int i{ sizeofList };
+			while (i-- > 0)
+			{
+				cout << pr->data << " ";
+				pr = pr->nextElement;
+			}
+		}
+		cout << "\n\n";
+	}
+
+};
+
+template <typename E>
+class Queue
+{
+	void operator = (const Queue&) {}
+	Queue(const Queue&) {}
+
+public:
+	//constructors and destructors
+	Queue() {}
+	virtual ~Queue() {}
+
+	// Insert an element at the end of the queue
+	virtual void insert(const E &) = 0;
+
+	//Remove the first element of the queue
+	virtual E remove() = 0;
+
+	// Return the length of the queue
+	virtual int length() const = 0;
+
+	//Return a copy of the first element
+	virtual const E& firstElement_val() const = 0;
+
+	// Remove all the elements from the Queue
+	// and free the occupied memory without causing
+	// memory leak
+	virtual void clearQueue() = 0;
+
+};
+
+template <typename E>
+class QueueLinkList : public Queue<E>
+{
+	//size of the link list
+	int size;
+	// Array for storing the data
+	linkList<E>* QueueArray;
+
+
+public:
+	//constructors and destructors
+	//constructors and destructors
+	QueueLinkList()
+	{
+		size = 0;
+		QueueArray = new linkList<E>();
+	}
+	~QueueLinkList()
+	{
+		QueueArray->clear();
+		//for the next statement ensure
+		// that you have implemented
+		// destructor in the linkList class.
+		delete QueueArray;
+	}
+
+	void insert(const E &insrt_ele) {
+		QueueArray->append(insrt_ele);
+		size++;
+	}
+
+	E remove() {
+		if (size == 0)
+		{
+			cout << "Underflow of Queue\n";
+			return -9999;
+		}
+		else {
+			size--;
+			return QueueArray->remove();
+		}
+	}
+
+	int length() const {
+		return size;
+	}
+
+	const E& firstElement_val() const {
+		if (size == 0) {
+			cout << "Queue is empty so no element so far\n";
+			return -9999;
+		}
+		return QueueArray->getData();
+	}
+
+	void clearQueue() {
+		QueueArray->clear();
+		size = 0;
+	}
+
+	void print() {
+		if (size == 0)
+			cout << "Queue is empty\n";
+		else {
+			cout << "Queue is: ";
+				QueueArray->print();
+		}
+	}
+
+};
+
+int main()
+{
+		QueueLinkList<int> myQueue;
+		do {
+			int operation{ 0 };
+			cout << "\n***********Enter number according to which operation you want to perform:\n";
+			cout << "\n0-EXIT\n1-Length of Queue\n2-Enqueue\n3-Dequeue\n4-First Element\n"
+				"5-clear Queue\n6-Print Queue\n\n";
+			cout << "Choice: ";
+			cin >> operation;
+			switch (operation) {
+			case 0:
+			{
+				return 0;
+			}
+			case 1:
+			{
+				cout << "\nCurrent Length is: " << myQueue.length() << endl;
+				break;
+			}
+			case 2:
+			{
+				cout << "\nEnter element you want to enqueue: ";
+				int jam;
+				cin >> jam;
+				myQueue.insert(jam);
+				break;
+			}
+			case 3:
+			{
+				int i = myQueue.remove();
+				if (i != -9999)
+					cout << i << " is Dequeued\n";
+				break;
+			}
+			case 4:
+			{
+				int j = myQueue.firstElement_val();
+				if (j != -9999) {
+					cout << "\nFirst element is:" << j;
+				}
+				break;
+			}
+			case 5:
+			{
+				myQueue.clearQueue();
+				break;
+			}
+			case 6:
+			{
+				myQueue.print();
+				break;
+			}
+			default: {
+				cout << "\nEnter valid choice.\n";
+			}
+			}
+		} while (1);
+}
