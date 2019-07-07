@@ -1,0 +1,442 @@
+//Name:Aakash Kamleshkumar Panchal
+//Student Id:201801459
+//Date:14/03/2019
+//Program:Implementation of Linked List
+
+
+#include <iostream>
+using namespace std;
+
+template<typename E>
+struct node {
+	E data;
+	node<E>* nextElement;
+};
+
+template <typename E>
+class List
+{
+	void operator = (const List&) {}
+	List(const List&) {}
+
+public:
+	//constructors and destructors
+	List() {}
+	virtual ~List() {}
+
+	//Return the number of elements in the List
+	virtual int NumberOfElements() const = 0;
+
+	//Return the Location of current element
+	virtual int CurrentLocation() const = 0;
+
+	//Return the data of current element
+	virtual const E& getData() const = 0;
+
+	//clear all the data from the List
+	virtual void clear() = 0;
+
+	//insert a data in the List at current location
+	virtual void insert(const E& data) = 0;
+
+	//insert a data in the end of the List
+	virtual void append(const E& data) = 0;
+
+	//delete a data at the current Location
+	virtual E remove() = 0;
+
+	//set the current Location to the start of the List
+	virtual void setListLocationToStart() = 0;
+
+	//set the current Location to the end of the List
+	virtual void setListLocationToEnd() = 0;
+
+	//set the current Location to the element on left side
+	// of current element
+	virtual void previousElement() = 0;
+
+	//set the current Location to the element on left side
+	// of current element
+	virtual void nextElement() = 0;
+
+	//Set current Location to a new Location
+	virtual int setToNewLocation(int location) = 0;
+
+};
+
+template <typename E>
+class linkList : public List<E>
+{
+public:
+	node<E>*firstElement;
+	node<E>*lastElement;
+	node<E>*currentElement;
+	int sizeofList;
+	int currentLocation;
+
+	//constructors and destructors
+
+	linkList()
+	{
+		firstElement = lastElement = currentElement = new node < E >;
+		firstElement = lastElement = currentElement = NULL;
+		currentLocation = 0;
+		sizeofList = 0;
+	}
+	~linkList()
+	{
+		while (firstElement != NULL)
+		{
+			currentElement = firstElement;
+			firstElement = firstElement->nextElement;
+			delete currentElement;
+		}
+	}
+
+	int NumberOfElements() const
+	{
+		return sizeofList;
+	}
+
+	int CurrentLocation() const
+	{
+		return currentLocation;
+	}
+
+	const E& getData() const
+	{
+		int i{ currentLocation };
+		node<E>*temp = new node<E>;
+		temp = firstElement;
+		while (i-- > 1)
+		{
+			temp = temp->nextElement;
+		}
+		return temp->data;
+	}
+
+	void clear()
+	{
+		while (firstElement != NULL)
+		{
+			currentElement = firstElement;
+			firstElement = firstElement->nextElement;
+			delete currentElement;
+		}
+		firstElement = currentElement = lastElement = NULL;
+		sizeofList = 0;
+		currentLocation = 0;
+	}
+
+	void insert(const E& data)
+	{
+		node<E>*p = new node<E>;
+		p->data = data;
+		sizeofList++;
+		if (currentElement == firstElement)
+		{
+			if (firstElement == NULL && lastElement == NULL)
+			{
+				lastElement = p;
+			}
+			p->nextElement = firstElement;
+			currentElement = p;
+			firstElement = p;
+			currentLocation = 1;
+			return;
+		}
+		node<E>* tN = new node<E>;
+		tN = firstElement;
+		while (tN->nextElement != currentElement)
+		{
+			tN = tN->nextElement;
+		}
+		tN->nextElement = p;
+		p->nextElement = currentElement;
+		currentElement = p;
+	}
+
+	void append(const E& data)
+	{
+		node<E>* k = new node<E>;
+		k->data = data;
+		k->nextElement = NULL;
+		if(sizeofList==0)
+		{
+			firstElement = k;
+			currentElement = k;
+			lastElement = k;
+			sizeofList++;
+			currentLocation = 1;
+		}
+		else {
+			lastElement->nextElement = k;
+			lastElement = k;
+			sizeofList++;
+		}
+	}
+
+	E remove()
+	{
+		node<E>*rmv = new node<E>;
+		E removed{ currentElement->data};
+		rmv = firstElement;
+		int lo{ 1 };
+		while (lo++ < currentLocation-1)
+		{
+			rmv = rmv->nextElement;
+		}
+		if (sizeofList == 1)
+		{
+			currentElement = firstElement = lastElement = NULL;
+			sizeofList = 0;
+			currentLocation = 0;
+		}
+		else if (currentLocation==1 && sizeofList!=1) {
+			firstElement = currentElement->nextElement;
+			currentElement = firstElement;
+			sizeofList--;
+		}
+		else {
+			rmv->nextElement = currentElement->nextElement;
+			currentElement=rmv->nextElement;
+			sizeofList--;
+		}
+		if (currentLocation == sizeofList + 1) {
+			setToNewLocation(currentLocation - 1);
+		}
+		return removed;
+	}
+
+	void setListLocationToStart()
+	{
+		setToNewLocation(1);
+	}
+
+	void setListLocationToEnd()
+	{
+		setToNewLocation(sizeofList);
+	}
+
+	void previousElement()
+	{
+		setToNewLocation(currentLocation - 1);
+	}
+
+	void nextElement()
+	{
+		setToNewLocation(currentLocation + 1);
+	}
+
+	int setToNewLocation(int location)
+	{
+		currentLocation = location;
+		int i{ 1 };
+		currentElement = firstElement;
+		while (i++ < currentLocation)
+		{
+			currentElement = currentElement->nextElement;
+		}
+		return currentLocation;
+	}
+
+	void print()
+	{
+		if (sizeofList == 0)
+		{
+			cout << "\nLinked List has no nodes, it's empty" << endl;
+		}
+		else {
+			node<E>* pr = new node<E>;
+			pr = firstElement;
+			int i{ sizeofList };
+			cout << " Linked List is :";
+			while (i-->0)
+			{
+				cout << pr->data << " ";
+				pr = pr->nextElement;
+			}
+		}
+		cout << "\n\n";
+	}
+
+};
+
+int main()
+{
+	linkList<int> L;
+
+	do {
+		int operation{ 0 };
+		cout << "\n*******Enter number according to operation you want to perform:\n\n";
+
+		cout << "    0-EXIT\n    1-Size of List\n    2-Current Location-\n    3-Data of current Location\n"
+			"    4-Clear all the data from the list\n    5-Insert at current Location\n"
+			"    6-Append\n    7-remove current Location Node data\n    8-Set current Location to the starting of list"
+			"\n    9-Set current Location to the ending of list\n    10-Set current Location to Previous element"
+			"\n    11-Set current Location to next element\n    12-set Location to input Location"
+			"\n    13-Print Linked List\n\n********************"
+			"********************************************\n\n";
+		cout << "Attention!! Linked List index starts from 1 in this code\n";
+		cout << "\nChoice Operation:";
+		cin >> operation;
+		switch (operation)
+		{
+
+		case 0: {
+			return 0;
+		}
+		case 1: {
+			cout << "\nSize of List:" << L.NumberOfElements() << "\n";
+			break;
+		}
+
+		case 2: {
+			if (L.firstElement == NULL)
+			{
+				cout << "\nLinked List is empty, NO DATA\n";
+				break;
+			}
+			cout << L.CurrentLocation() << endl;
+			break;
+		}
+
+		case 3: {
+			if (L.firstElement == NULL)
+			{
+				cout << "\nLinked List is empty, NO DATA\n";
+				break;
+			}
+			if (L.currentLocation > L.sizeofList)
+			{
+				cout << "\nNO data at that location\n";
+				break;
+			}
+			cout << "\nCurrent Element Data is:" << L.getData() << endl;
+			L.print();
+			break;
+		}
+
+		case 4: {
+			if (L.firstElement == NULL)
+			{
+				cout << "\nLinked List is already empty:\n";
+				break;
+			}
+			L.clear();
+			cout << " \n \"Every data is cleared\" \n ";
+			break;
+		}
+
+		case 5: {
+			cout << "\nEnter element you want to insert:";
+			int data{ 0 };
+			cin >> data;
+			L.insert(data);
+			cout << "\nNode Inserted\n\n";
+			L.print();
+			break;
+		}
+
+		case 6: {
+			cout << "\nEnter data of node you want to append: \n";
+			int dataa;
+			cin >> dataa;
+			L.append(dataa);
+			cout << "\nNode Appended\n\n";
+			L.print();
+			break;
+		}
+
+		case 7: {
+			if (L.sizeofList == 0 || L.currentLocation<0)
+			{
+				cout << "\nLinked List is empty you can not remove further\n";
+				break;
+			}
+			cout<<"\nNode of data "<<L.remove()<<" is removed.\n"<<endl;
+			L.print();
+			break;
+		}
+
+		case 8: {
+			if (L.sizeofList == 0)
+			{
+				cout << "\nLinked List is empty\n";
+				break;
+			}
+			L.setListLocationToStart();
+			break;
+		}
+
+		case 9: {
+			if (L.sizeofList == 0)
+			{
+				cout << "\nLinked List is empty\n";
+				break;
+			}
+			L.setListLocationToEnd();
+			break;
+		}
+
+		case 10: {
+			if (L.sizeofList == 0)
+			{
+				cout << "\nLinked List is empty\n";
+				break;
+			}
+			if (L.currentLocation == 1 || L.currentLocation==0)
+			{
+				cout << "\nNO previous node present in Linked list\n";
+				break;
+			}
+			L.previousElement();
+			break;
+		}
+		case 11: {
+			if (L.sizeofList == 0)
+			{
+				cout << "\nLinked List is empty\n";
+				break;
+			}
+			if (L.currentLocation == L.sizeofList)
+			{
+				cout << "\nNo next node present in Linked list\n";
+				break;
+			}
+			L.nextElement();
+			break;
+		}
+		case 12: {
+			if (L.sizeofList == 0)
+			{
+				cout << "\nLinked List is empty\n";
+				break;
+			}
+			cout << "\nEnter Location you want to set:" << endl;
+			int o{ 0 };
+			do {
+				cout << "\nEnter Valid Location i.e.,between:1 & "<<L.sizeofList<<endl;
+				cin >> o;
+			} while (o > L.sizeofList || o<=0);
+
+			cout<<"\nCurrent location is set to "<<L.setToNewLocation(o);
+			L.print();
+			break;
+		}
+		case 13: {
+			if (L.sizeofList == 0)
+			{
+				cout << "\nLinked List is empty\n";
+				break;
+			}
+			L.print();
+			break;
+		}
+
+		default:
+			cout << "\nEnter valid number choice\n";
+		}
+
+	} while (1);
+}
