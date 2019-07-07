@@ -1,0 +1,291 @@
+#include"pch.h"
+#include<iostream>
+#include<queue>
+
+using namespace std;
+
+//Binary tree node abstract class
+template <typename E>
+class BinNode {
+public:
+	BinNode<E>() {}
+	virtual ~BinNode() {}
+	virtual E& getValue() = 0;
+	virtual void setValue(const E&) = 0;
+	virtual bool isLeaf() = 0;
+};
+
+
+template <typename E>
+class BinaryTreeNode :public BinNode<E>
+{
+	E value; // The node's value
+	BinaryTreeNode* leftChild; // Pointer to left child
+	BinaryTreeNode* rightChild; // Pointer to right child
+
+public:
+	// constructors and destructor
+	BinaryTreeNode() 
+	{
+		value = -1; leftChild = rightChild = NULL;
+	}
+	BinaryTreeNode(E e, BinaryTreeNode* l = NULL, BinaryTreeNode* r = NULL)
+	{		value = e; leftChild = l; rightChild = r;	}
+	~BinaryTreeNode() // Destructor
+	{		delete leftChild; delete rightChild;	}
+
+	// Functions to set and return the value and key
+	E& getValue() { return value; }
+	void setValue(const E& e) { value = e; }
+
+	// Functions to set and return the children
+	inline BinaryTreeNode* left() const { return leftChild; }
+	void setLeft(BinaryTreeNode<E>* b) { leftChild = b; }
+	inline BinaryTreeNode* right() const { return rightChild; }
+	void setRight(BinaryTreeNode<E>* b) { rightChild = b; }
+
+	// Return true if it is a leaf, false otherwise
+	bool isLeaf() { return (leftChild == NULL) && (rightChild == NULL); }
+
+	bool isnotperfect() { return (leftChild != NULL) && (rightChild != NULL); }
+};
+
+template<typename E>
+BinaryTreeNode<E>* insert(BinaryTreeNode<E>* root, E data)
+{	
+	if (root->left()==NULL && root->right()==NULL && root->getValue()==-1) {
+		root->setValue(data);
+		return root;
+	}
+	BinaryTreeNode<E>* newnode = new BinaryTreeNode<E>(data);
+	queue< BinaryTreeNode<E> * >level;
+	level.push(root);
+	while (level.empty() == false) {
+		BinaryTreeNode<E>* newroot = level.front();
+		level.pop();
+		if (newroot->left() == NULL) {
+			newroot->setLeft(newnode);
+			return root;
+		}
+		else if (newroot->right() == NULL) {
+			newroot->setRight(newnode);
+			return root;
+		}
+		else {
+			level.push(newroot->left());
+			level.push(newroot->right());
+		}
+	}
+	return root;
+}
+
+template<typename E>
+void printLevelOrder(BinaryTreeNode<E>* root )
+{
+	queue<BinaryTreeNode<E>*> print;
+	print.push(root);
+
+	while (print.empty() == false) {
+		BinaryTreeNode<E>* temp = print.front();
+		if(temp!=NULL)
+		cout << temp->getValue()<<" ";
+
+		if (temp->left() != NULL)
+			print.push(temp->left());
+		if (temp->right() != NULL)
+			print.push(temp->right());
+
+		print.pop();
+	}
+}
+
+template<typename E>
+void deleteNode(BinaryTreeNode<E>* root, E data)
+{
+	if (root == NULL)
+	{
+		cout << "No node present in tree" << endl;
+		return;
+	}
+
+	BinaryTreeNode<E>* findnode = new BinaryTreeNode<E>();
+	BinaryTreeNode<E>* lastnode;
+	BinaryTreeNode<E>* tempnode;
+	E lastdata;
+	
+	queue<BinaryTreeNode<E>*>find;
+	find.push(root);
+
+	while (find.empty() != true)
+	{
+		lastnode = find.front();
+		if (lastnode->getValue() == data)
+		{
+			break;
+		}
+		find.pop();
+		if (lastnode->left() != NULL)
+			find.push(lastnode->left());
+		if (lastnode->right() != NULL)
+			find.push(lastnode->right());
+	}
+	if (find.empty() == true) {
+		cout << "No node matching with this data";
+		return;
+	}
+	
+	queue<BinaryTreeNode<E>*>deletequeue;
+	deletequeue.push(root);
+
+	while (deletequeue.empty() != true)
+	{
+		findnode = deletequeue.front();
+		lastdata = findnode->getValue();
+		deletequeue.pop();
+		if (findnode->left() != NULL)
+			deletequeue.push(findnode->left());
+		if (findnode->right() != NULL)
+			deletequeue.push(findnode->right());
+	}
+
+	queue<BinaryTreeNode<E>*>deletequeue2;
+	deletequeue2.push(root);
+
+	while (deletequeue2.empty() != true)
+	{
+		tempnode = deletequeue2.front();
+		if (tempnode->left() == findnode) {
+			tempnode->setLeft(NULL);
+			break;
+		}
+		else if (tempnode->right() == findnode) {
+			tempnode->setRight(NULL);
+			break;
+		}
+		deletequeue2.pop();
+		if (tempnode->left() != NULL)
+			deletequeue2.push(tempnode->left());
+		if (tempnode->right() != NULL)
+			deletequeue2.push(tempnode->right());
+	}
+
+	queue<BinaryTreeNode<E>*>findqueue;
+	findqueue.push(root);
+
+	while (findqueue.empty() != true)
+	{
+		lastnode = findqueue.front();
+		if (lastnode->getValue() == data)
+		{
+			lastnode->setValue(lastdata);
+			return;
+		}
+		findqueue.pop();
+		if (lastnode->left() != NULL)
+			findqueue.push(lastnode->left());
+		if (lastnode->right() != NULL)
+			findqueue.push(lastnode->right());
+	}
+
+	findnode = NULL;
+	delete findnode;
+}
+
+template<typename E>
+void preorder(BinaryTreeNode<E>*root)
+{
+	if (root == NULL)
+		return;
+
+	cout << root->getValue()<<" ";
+	preorder(root->left());
+	preorder(root->right());
+}
+
+template<typename E>
+void postorder(BinaryTreeNode<E>*root)
+{
+	if (root == NULL)
+		return;
+
+	postorder(root->left());
+	postorder(root->right());
+	cout << root->getValue() << " ";
+}
+
+
+template<typename E>
+void inorder(BinaryTreeNode<E>*root)
+{
+	if (root == NULL)
+		return;
+
+	inorder(root->left());
+	cout << root->getValue() << " ";
+	inorder(root->right());
+}
+
+int main()
+{
+	BinaryTreeNode<int>* root = new BinaryTreeNode<int>();
+	do {
+		cout << "\n\nChoose number according to which operation you want to perform: ";
+		cout << "\n\n0-EXIT\n1-Insert a node Binary Tree\n2-Delete Node of given data\n3-Inorder Traversal\n"
+			"4-Preorder Traversal\n5-Inorder Traversal\n";
+		int choice;
+		cin >> choice;
+		switch (choice)
+		{
+		case 0:
+			return 0;
+		case 1:
+		{
+			cout << "Enter data you want to insert in binary tree: ";
+			int data;
+			cin >> data;
+			insert(root, data);
+			break;
+		}
+		case 2:
+		{
+			cout << "Enter data of node you want to delete: ";
+			int temp;
+			cin >> temp;
+			deleteNode(root, temp);
+			break;
+		}
+		case 3:
+		{
+			if (root->getValue() == -1 && root->left() == NULL && root->right() == NULL)
+			{
+				cout << "Tree has no node";
+				break;
+			}
+			inorder(root);
+			break;
+		}
+		case 5:
+		{
+			if (root->getValue() == -1 && root->left() == NULL && root->right() == NULL)
+			{
+				cout << "Tree has no node";
+				break;
+			}
+			postorder(root);
+			break;
+		}
+		case 4:
+		{
+			if (root->getValue() == -1 && root->left() == NULL && root->right() == NULL)
+			{
+				cout << "Tree has no node";
+				break;
+			}
+			preorder(root);
+			break;
+		}
+		default:
+			cout << "Enter valid choice" << endl;
+		}
+	} while (1);
+}
