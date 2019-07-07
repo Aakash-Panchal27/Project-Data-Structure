@@ -1,0 +1,417 @@
+//Name  : Aakash Panchal
+//ID    :201801459
+//Date  :05/03/2019(Lab Date:01/03/2019)
+//Program:Implementation of Array List
+
+#include<iostream>
+using namespace std;
+
+template <typename E>
+class List
+{
+	void operator = (const List&) {}
+	List(const List&) {}
+
+public:
+	//constructors and destructors
+	List() {}
+	virtual ~List() {}
+
+	//Return the number of elements in the List
+	virtual int NumberOfElements() const = 0;
+
+	//Return the Location of current element
+	virtual int CurrentLocation() const = 0;
+
+	//Return the data of current element
+	virtual const E& getData() const = 0;
+
+	//clear all the data from the List
+	virtual void clear() = 0;
+
+	//insert a data in the List at current location
+	virtual void insert(const E& data) = 0;
+
+	//insert a data in the end of the List
+	virtual void append(const E& data) = 0;
+
+	//delete a data at the current Location
+	virtual E remove() = 0;
+
+	//set the current Location to the start of the List
+	virtual void setListLocationToStart() = 0;
+
+	//set the current Location to the end of the List
+	virtual void setListLocationToEnd() = 0;
+
+	//set the current Location to the element on left side
+	// of current element
+	virtual void previousElement() = 0;
+
+	//set the current Location to the element on left side
+	// of current element
+	virtual void nextElement() = 0;
+
+	//Set current Location to a new Location
+	virtual int setToNewLocation(int location) = 0;
+
+};
+
+template <typename E>
+class arrayList : public List<E>
+{
+public:
+	int arraySize; // maximum size of the list
+	int currentSize; // number of data elements stored
+	int currentLocation;// location pointer of the list
+	E* dataArray; // Array for storing the data
+
+	//constructors and destructors
+
+	void operator = (const arrayList&k)
+	{
+		arraySize = k.arraySize;
+		currentSize = k.currentSize;
+		currentLocation = k.currentLocation;
+		int i = { 0 };
+		for (i = 0; i < k.currentSize; i++)
+		{
+			dataArray[i] = k.dataArray[i];
+		}
+
+	}
+
+	arrayList(const arrayList&k)
+	{
+		arraySize = k.arraySize;
+		currentSize = k.currentSize;
+		currentLocation = k.currentLocation;
+		dataArray = new E[arraySize];
+		int i = { 0 };
+		for (i = 0; i < currentSize; i++)
+		{
+			dataArray[i] = k.dataArray[i];
+		}
+	}
+
+	arrayList(int size)
+	{
+		arraySize = size;
+		currentSize = 0;
+		currentLocation = 0;
+		dataArray = new E[arraySize];
+	}
+	~arrayList()
+     {
+           delete [] dataArray;
+     }
+
+	int NumberOfElements() const
+	{
+		return currentSize;
+	}
+	int CurrentLocation() const
+	{
+		return currentLocation;
+	}
+	const E& getData() const
+	{
+		return dataArray[currentLocation];
+	}
+	void clear()
+	{
+		currentSize = 0;
+		currentLocation = 0;
+		cout << "\nArray List is Empty now\n";
+	}
+	void insert(const E& data)
+	{
+		for (int i = currentSize; i >currentLocation; i--)
+		{
+			dataArray[i] = dataArray[i - 1];
+		}
+		dataArray[currentLocation] = data;
+		currentSize++;
+	}
+
+	void append(const E& data)
+	{
+		dataArray[currentSize] = data;
+		currentSize++;
+	}
+
+	E remove()
+	{
+		int temp{ dataArray[currentLocation] };
+		for (int i = currentLocation; i < currentSize - 1; i++)
+		{
+				dataArray[i] = dataArray[i + 1];
+		}
+		currentSize--;
+		if (currentLocation > currentSize)
+			currentLocation--;
+		return temp;
+	}
+	void setListLocationToStart()
+	{
+		currentLocation = 0;
+	}
+	void setListLocationToEnd()
+	{
+		currentLocation = currentSize-1;
+	}
+	void previousElement()
+	{
+			currentLocation -= 1;
+	}
+
+	void nextElement()
+	{
+			currentLocation += 1;
+	}
+
+	int setToNewLocation(int location)
+	{
+		currentLocation = location-1;
+		return currentLocation + 1;
+	}
+
+	void print()
+	{
+		cout << "\n";
+		int i = { 0 };
+		cout << "Array List:";
+		for (i = 0; i < currentSize; i++)
+		{
+			cout << dataArray[i] << " ";
+		}
+	}
+};
+
+int main()
+{
+	int n{ 0 };
+	cout << "Enter total size of array List:\n";
+	cin >> n;
+	cin.ignore(32686, '\n');
+	arrayList <int> a(n);
+	do {
+		int operation{ 0 };
+		cout << "\n\n*******Enter number according to operation you want to perform:\n\n";
+
+		cout << "    0-EXIT\n    1-Number of Elements\n    2-Location of Current Element\n    3-Data of current Element\n"
+			"    4-Clear all the data from the list\n    5-Insert at current Location\n"
+			"    6-Append\n    7-remove current Location data\n    8-Set current Location at the starting of list"
+			"\n    9-Set current Location at the ending of list\n    10-Set current Location to Previous element"
+			"\n    11-Set current Location to next element\n    12-set Location to input Location"
+			"\n    13-Operator= for arraylist\n    14-copy constructor\n    15-Print Array List\n\n********************"
+			"********************************************\n\n";
+	cin >> operation;
+	switch (operation)
+		{
+
+			case 0: {
+				return 0;
+			}
+			case 1: {
+				cout << "\nTotal Element present:" << a.NumberOfElements() << "\n";
+				break;
+			}
+
+			case 2: {
+				if (a.currentSize == 0)
+				{
+					cout << "Current Location is: " << a.currentSize << "\n";
+					break;
+				}
+				cout << "Current Location is: " << a.CurrentLocation() + 1 << "\n";
+				break;
+			}
+
+			case 3: {
+				if (a.currentSize == 0)
+				{
+					cout << "\nArray List is Empty so there is no data\n";
+					break;
+				}
+				cout << "Current Location Data is:"<<a.getData() << "\n";
+				a.print();
+				break;
+			}
+
+			case 4: {
+				a.clear();
+				a.currentLocation = 0;
+				a.currentSize = 0;
+				cout << " \n \"Every data is cleared\" \n ";
+				break;
+			}
+
+			case 5: {
+				int insrt{ 0 };
+				if (a.currentSize == n)
+				{
+					cout << "\n\"Array List is full, you can not Insert\"\n";
+					break;
+				}
+				else
+				{
+					cout << "\nEnter element you want to Insert\n";
+					cin >> insrt;
+					a.insert(insrt);
+				}
+				cout << "\n\"Inserted\"\n";
+				a.print();
+				break;
+			}
+
+			case 6: {
+				int apint{ 0 };
+				if (a.currentSize == n)
+				{
+					cout << "\n\"Array List is full, you can not Append\"\n";
+					break;
+				}
+				else
+				{
+					cout << "\nEnter number you want to append\n";
+					cin >> apint;
+					a.append(apint);
+				}
+				a.print();
+				break;
+			}
+
+			case 7: {
+				if (a.currentSize == 0) {
+					cout << "\nArray List is Empty, you can not remove if there is no elements\n";
+					break;
+				}
+				else{
+					cout<<"Element "<<a.remove()<<" is removed";
+				}
+				a.print();
+				break;
+			}
+
+			case 8: {
+				if (a.currentSize == 0)
+				{
+					cout << "\nArray List is Empty\n";
+					break;
+				}
+				a.setListLocationToStart();
+				cout << "Current Location is: " << a.CurrentLocation() + 1 << "\n";
+				break;
+			}
+
+			case 9: {
+				if (a.currentSize == 0)
+				{
+					cout << "\nArray List is Empty\n";
+					break;
+				}
+				a.setListLocationToEnd();
+				cout << "Current location is:" << a.CurrentLocation()+1<<"\n";
+				break;
+			}
+
+			case 10: {
+				if (a.currentSize == 0)
+				{
+					cout << "\nArray List is Empty\n";
+					break;
+				}
+				if (a.currentLocation == 0)
+				{
+					cout << "\nNo previous element\n";
+					break;
+				}
+				else {
+					a.previousElement();
+				}
+				cout << "Current location is:" << a.CurrentLocation() + 1 << "\n";
+				break;
+
+			}
+			case 11: {
+				if (a.currentSize == 0)
+				{
+					cout << "\nArray List is Empty\n";
+					break;
+				}
+				if (a.currentLocation == a.currentSize-1)
+				{
+					cout << "\nNo next element\n";
+					break;
+				}
+				else {
+					a.nextElement();
+				}
+				cout << "Current location is:" << a.CurrentLocation() + 1 << "\n";
+				break;
+			}
+			case 12: {
+				if (a.currentSize == 0)
+				{
+					cout << "\nArray List is Empty\n";
+					break;
+				}
+
+					cout << "\nEnter Location you want to set in Current Location:\n";
+					int locationset{ 0 };
+					do {
+						cout << "\nEnter valid location i.e.,between(1 to "<<a.currentSize<<")\n";
+						cin >> locationset;
+						cin.ignore(32786, '\n');
+					} while ((locationset > a.currentSize) || (locationset==0));
+					a.setToNewLocation(locationset);
+					cout << "Current location is:" << a.currentLocation + 1 << "\n";
+				break;
+
+			}
+			case 13: {
+				if (a.currentSize == 0)
+				{
+					cout << "\nYour Array List is empty\n";
+					break;
+				}
+				arrayList <int> c(n);
+				c = a;
+				cout << "Using = operator new array List is:";
+				for (int i = 0; i < c.currentSize; i++)
+				{
+					cout<<c.dataArray[i]<<" ";
+				}
+				break;
+			}
+			case 14: {
+				if (a.currentSize == 0)
+				{
+					cout << "\nYour Array List is empty\n";
+					break;
+				}
+				arrayList<int>b(a);
+				cout << "Using Copy constructor new Array List is :";
+				for (int i = 0; i < b.currentSize; i++)
+				{
+					cout << b.dataArray[i] << " ";
+				}
+				break;
+			}
+			case 15:{
+				if (a.currentSize == 0)
+				{
+					cout << "\nArray is empty\n";
+					break;
+				}
+				a.print();
+				break;
+			}
+
+			default:
+				cout << "\nEnter valid number choice\n";
+		}
+
+	} while (1);
+}
