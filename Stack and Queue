@@ -1,0 +1,384 @@
+//Name:Aakash Panchal
+//ID:201801459
+//Date:
+//Program:Implementation of Stacks and Queues
+
+#include"pch.h"
+#include <iostream>
+
+using namespace std;
+
+template <typename E>
+class Stack
+{
+	void operator = (const Stack&) {}
+	Stack(const Stack&) {}
+public:
+	//constructors and destructors
+	Stack() {}
+	virtual ~Stack() {}
+
+	// Return the length of the stack
+	virtual int length() const = 0;
+
+	//Return the Location of current element
+	virtual void push(const E& element) = 0;
+
+	//clear the current data element from stack
+	virtual E pop() = 0;
+
+	//Return a copy of the current element
+	virtual const E& currentElement() const = 0;
+
+	// Remove all the elements from the stack
+	// and free the occupied memory without causing
+	// memory leak
+	virtual void clearStack() = 0;
+};
+
+template <typename E>
+class StackArrayList : public Stack<E>
+{
+public:
+
+	int stacksize; // size of the stack
+	int currentLocation; // location pointer keeping track of
+						 // current element
+	E* StackArray; // Array for storing the data
+
+	//constructors and destructors
+	StackArrayList(int size)
+	{
+		stacksize = size;
+		StackArray = new E[size];
+		currentLocation = -1;
+	}
+	~StackArrayList()
+	{
+		delete StackArray;
+	}
+
+	int length() const
+	{
+		return currentLocation + 1;
+	}
+
+	void push(const E& element)
+	{
+		currentLocation++;
+		StackArray[currentLocation] = element;
+	}
+
+	E pop()
+	{
+		int p{ currentLocation };
+		currentLocation--;
+		return StackArray[p];
+	}
+
+	const E& currentElement() const
+	{
+		return StackArray[currentLocation];
+	}
+
+	void clearStack()
+	{
+		delete StackArray;
+		currentLocation = -1;
+	}
+	void print()
+	{
+		int i{ 0 };
+		if (currentLocation == -1)
+		{
+			cout << "\n\nStack is empty\n";
+		}
+		else {
+			cout << "\nStack is:";
+			for (i = 0; i <= currentLocation; i++)
+				cout << StackArray[i] << " ";
+			cout << "\n\n";
+		}
+	}
+};
+
+template <typename E>
+class Queue
+{
+	void operator = (const Queue&) {}
+	Queue(const Queue&) {}
+
+public:
+	//constructors and destructors
+	Queue() {}
+	virtual ~Queue() {}
+
+	// Insert an element at the end of the queue
+	virtual void insert(const E &) = 0;
+
+	//Remove the first element of the queue
+	virtual E remove() = 0;
+
+	// Return the length of the queue
+	virtual int Length() const = 0;
+
+	//Return a copy of the first element
+	virtual const E& FirstElement() const = 0;
+
+	// Remove all the elements from the Queue
+	// and free the occupied memory without causing
+	// memory leak
+	virtual void clearQueue() = 0;
+};
+
+
+template <typename E>
+class QueueArrayList : public Queue<E>
+{
+	int maximumSize;  //maximum size of the array list 
+	int firstElement; //index of the first element
+	int lastElement; //index of the last element
+	E* QueueArray; // Array for storing the data
+
+public:
+	//constructors and destructors
+
+	QueueArrayList(int size)
+	{
+		maximumSize = size;
+		QueueArray = new E[size];
+		firstElement = lastElement = 0;
+	}
+	~QueueArrayList()
+	{
+		delete QueueArray;
+	}
+
+	void insert(const E &insrt)
+	{
+		if (Length()==0)
+		{
+			QueueArray[0] = insrt;
+		}
+		else
+		{
+			QueueArray[lastElement] = insrt;
+		}
+		lastElement++;
+	}
+
+	E remove()
+	{
+		if (Length() == 1)
+		{
+			firstElement = lastElement = 0;
+			delete QueueArray;
+		}
+		else
+		{
+			firstElement += 1;
+		}
+		return QueueArray[firstElement-1];
+	}
+
+	int Length() const
+	{
+		if (lastElement == 0)
+			return 0;
+		else
+			return lastElement-firstElement;
+	}
+
+	const E& FirstElement() const
+	{
+		return QueueArray[firstElement];
+	}
+
+	void clearQueue()
+	{
+		delete QueueArray;
+		firstElement = lastElement = 0;
+	}
+	void print()
+	{
+		cout << "\nQueue is: ";
+		for (int i = firstElement; i < lastElement; i++)
+			cout << QueueArray[i]<<" ";
+	}
+};
+
+int main()
+{
+	cout << "********Enter number according to which data structure you want to implement:";
+	cout << "\n1-Stacks\n2-Queues\n3-Queues by Linked List\n\n";
+	int sorq{0};
+	cin >> sorq;
+	switch (sorq) {
+	case 0:
+		return 0;
+	case 1: {
+		cout << "Enter Stack Array size:";
+		int size{ 0 };
+		cin >> size;
+		int operation{ 0 };
+		StackArrayList<int> mystack(size);
+		do {
+			cout << "\n***********Enter number according to which operation you want to perform:\n";
+			cout << "\n0-EXIT\n1-length of stack\n2-Push operation on stack\n3-Pop operation on stack\n"
+				"4-Current Element\n5-Clear Stack\n6-Print Stack\n";
+			cout << "\nEnter choice:";
+			cin >> operation;
+			switch (operation) {
+			case 0:
+			{
+				return 0;
+			}
+			case 1:
+			{
+				cout << "\n\nStack length is:" << mystack.length() << endl;
+				break;
+			}
+			case 2:
+			{
+				if (mystack.stacksize == mystack.currentLocation + 1) {
+					cout << "\n\nOver flow of stack\n";
+					break;
+				}
+				cout << "\n\nEnter Element you want to push on stack:\n";
+				int push_ele{ 0 };
+				cin >> push_ele;
+				mystack.push(push_ele);
+				mystack.print();
+				break;
+			}
+			case 3:
+			{
+				if (mystack.currentLocation == -1)
+				{
+					cout << "\n\nUnder flow of stack\n";
+					break;
+				}
+				cout << mystack.pop() << "is poped";
+				if (mystack.currentLocation == -1)
+					cout << "\n\nStack is empty now\n";
+				else
+					mystack.print();
+				break;
+			}
+			case 4:
+			{
+
+				if (mystack.currentLocation == -1)
+				{
+					cout << "\n\nStack is empty so no elements\n";
+					break;
+				}
+				cout << "\n\nCurrent Element is:" << mystack.currentElement();
+				mystack.print();
+				break;
+			}
+			case 5:
+			{
+				if (mystack.currentLocation == -1)
+				{
+					cout << "\n\nStack is already empty\n";
+					break;
+				}
+				mystack.clearStack();
+				break;
+			}
+			case 6:
+			{
+				mystack.print();
+				break;
+			}
+			default:
+			{
+				cout << "\n\nEnter valid number\n";
+			}
+			}
+		} while (1);
+	}
+	case 2:	{
+			cout << "\nEnter Queue Array size:";
+			int size{ 0 };
+			cin >> size;
+			QueueArrayList<int> myqueue(size);
+			do {
+				int operation{ 0 };
+				cout << "\n***********Enter number according to which operation you want to perform:\n";
+				cout << "\n0-Exit\n1-length of queue\n2-first Element\n3-Insert\n4-Remove\n5-Clear queue\n"
+					"6-print queue\n\n";
+				cout << "Enter choice: ";
+				cin >> operation;
+				switch (operation) {
+				case 0:
+				{
+					return 0;
+				}
+				case 1:
+				{
+					cout<<"\nCurrent Length of queue is: "<<myqueue.Length();
+					break;
+				}
+				case 2:
+				{
+					if (myqueue.Length() == 0)
+					{
+						cout << "\nNO first Element as Queue is empty\n";
+					}
+					cout << "\nFirst element in queue is: "<< myqueue.FirstElement();
+					break;
+				}
+				case 3:
+				{
+					if (myqueue.Length() == size)
+					{
+						cout << "\nOver flow of queue";
+						break;
+					}
+					cout << "\nEnter element you want to insert: ";
+					int insrt{ 0 };
+					cin >> insrt;
+					myqueue.insert(insrt);
+					myqueue.print();
+					break;
+				}
+				case 4:
+				{
+					if (myqueue.Length() == 0)
+					{
+						cout << "\nUnder Flow of Queue";
+						break;
+					}
+					cout<<"\nFirst element " << myqueue.remove()<<" is removed in dequeue operation.";
+					if (myqueue.Length()== 0)
+						cout << "\nQueue is empty now\n";
+					myqueue.print();
+					break;
+				}
+				case 5:
+				{
+					myqueue.clearQueue();
+					cout << "\nEvery Data in queue is cleared now";
+					break;
+				}
+				case 6:
+				{
+					if (myqueue.Length() == 0)
+					{
+						cout << "\nQueue is empty\n";
+						break;
+					}
+					myqueue.print();
+				}
+				default:
+					cout << "Enter valid choiced";
+				}
+			} while (1);
+		}
+	case 3: {
+			
+	}
+	}
+}
