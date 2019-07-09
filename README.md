@@ -1,3 +1,3 @@
 # Project-Data-Structure
 
-I have been learning Data Structures from long time, now I decided to implement every Data Structure I have learned and here I go.......
+I have implemented some Data Structures in C++. Trie and after dated implementation have used Advanced highly efficient C++. I have used advanced concepts of C++ to implement.
