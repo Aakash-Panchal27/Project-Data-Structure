@@ -117,10 +117,10 @@ public:
     {
         for(int i=0;i<MAX;i++)
         {
-            if(check->children[i])
+            if(check->children[i]!=nullptr || check->isWord==true)
                 return false;
 
-            cout<<i<<endl;
+            //cout<<i<<endl;
         }
         return true;
     }
