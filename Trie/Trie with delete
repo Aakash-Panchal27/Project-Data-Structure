@@ -78,27 +78,39 @@ public:
         return false;
     }
 
-    void Partdelete(string& trieString,shared_ptr<TrieNode>&checkout)
+    bool Partdelete(string& trieString,shared_ptr<TrieNode>&checkout)
     {
-        if(checkout==nullptr)return;
-        if(trieString.size()==0){checkout->isWord=false;return;}
+        if(checkout==nullptr)return false;
+        if(trieString.size()==0){
+        	if(checkout->isWord==true)
+        	{
+        		checkout->isWord=false;
+        		return true;
+        	}
+        	return false;
+        }
         string akp=trieString.substr(1);
-        Partdelete(akp,checkout->children[i2c(trieString[0])]);
-        if(checkout!=nullptr){
+        if(Partdelete(akp,checkout->children[i2c(trieString[0])])){
             if(isEmptyNode(checkout->children[i2c(trieString[0])]))
             {
+            	//check();
+            	//cout<<akp<<endl;
                 checkout->children[i2c(trieString[0])].reset();
                 checkout->children[i2c(trieString[0])]=nullptr;
+                return true;
             }
-            else return;
+            else return true;
         }
+        else return false;
+
+        return false;
     }
 
     bool deleteWord(string & trieString)
     {
-        if(!searchWord(trieString))return false;
-        Partdelete(trieString,root);
+        if(Partdelete(trieString,root))
         return true;
+        return false;
     }
 
     bool isEmptyNode(shared_ptr<TrieNode>check) const
