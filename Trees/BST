@@ -1,1 +1,162 @@
-//I am working over it.
+template<typename T>
+struct Node{
+  Node*left;
+  Node*right;
+  T data;
+  Node()
+  {
+    left=nullptr;
+    right=nullptr;
+  }
+  Node(T value):Node()
+  {
+    data=value;
+  }
+  ~Node()
+  {
+    delete left;
+    left = nullptr;
+    delete right;
+    right = nullptr;
+  }
+};
+
+template<typename T>
+class BST
+{
+  Node<T>*root;
+public:
+  BST(){
+    root=nullptr;
+  }
+
+  void insert(T key)
+  {
+    if(root==nullptr)
+    {
+      root = new Node<T>(key);
+      return ;
+    }
+    Node<T>* temp = root;
+    Node<T>* trace;
+      while(temp!=nullptr)
+      {
+        if(temp->data<key){
+          trace=temp;
+          temp=temp->right;
+        }
+        else
+        {
+          trace=temp;
+          temp=temp->left;
+        }
+      }
+      temp=new Node<T>(key);
+      if(trace->data>=temp->data)
+      {
+        trace->left=temp;
+      }
+      else trace->right=temp;
+  }
+
+  bool search(T key)
+  {
+    if(root==nullptr)return false;
+    Node<T>*temp=root;
+    while(temp!=nullptr)
+    {
+      if(temp->data==key)
+      return true;
+      else if(temp->data<key)
+      temp=temp->right;
+      else temp=temp->left;
+    }
+    return false;
+  }
+
+  T maximum()
+  {
+    while(root->right)root=root->right;
+      return root->data;
+  }
+
+  Node<T>* maximum(Node<T>*root)
+  {
+    while(root->right)root=root->right;
+      return root;
+  }
+
+
+  T minimum()
+  {
+    while(root->left)root=root->left;
+        return root->data;
+  }
+
+  Node<T>* minimum(Node<T>*root)
+  {
+    while(root->left)root=root->left;
+    return root;
+  }
+
+  T successor(T key)
+  {
+    Node<T>* temp = root;
+    Node<T>* maybesuccessor = nullptr;
+    if(temp==nullptr){cout<<"NO succ";return key;}
+    while(temp->data != key)
+    {
+      if(temp->data < key)
+      {
+        temp = temp->right;
+      }
+      else{
+        temp = temp->left;
+        maybesuccessor = temp;
+    }
+
+      if(temp==nullptr){cout<<"NO succ";return key;}
+    }
+    if(temp->right != nullptr)
+    {
+      return minimum( temp->right ) -> data;
+    }
+    if(maybesuccessor!=nullptr)
+    return maybesuccessor->data;
+    else
+    {
+      cout<<"No succ"<<endl;
+      return key;
+    }
+  }
+
+  T predecessor(T key)
+  {
+    Node<T>* temp = root;
+    Node<T>* maybepredecessor = nullptr;
+    if(temp==nullptr){cout<<"NO Pred";return key;}
+    while(temp->data != key)
+    {
+      if(temp->data < key)
+      {
+        maybepredecessor = temp;
+        temp = temp->right;
+      }
+      else
+      {
+         temp = temp->left;
+      }
+      if(temp==nullptr){cout<<"NO Pred";return key;}
+    }
+    if(temp->left != nullptr)
+    {
+      return maximum( temp->left ) -> data;
+    }
+    if(maybepredecessor!=nullptr)
+    return maybepredecessor->data;
+    else{
+      cout<<"NO Pred";
+      return key;
+    }
+  }
+};
