@@ -1,0 +1,93 @@
+
+int height(node* temp)
+{
+     if (temp==nullptr)  
+        return -1;    
+     return temp->ht;
+} 
+
+node* rightrotate(node*root)
+{
+    node* right = root->left;
+    node* uska_right = right->right;
+    
+    right->right = root;
+    root->left = uska_right;
+    
+    root->ht = max(height(root->left), height(root->right)) + 1;
+    right->ht = max(height(right->left), height(right->right)) + 1;
+    
+    return right;
+}
+
+node* leftrotate(node*root)
+{
+    node* right = root->right;
+    node* uska_left = right->left;
+    
+    right->left = root;
+    root->right = uska_left;
+    
+    root->ht = max(height(root->left), height(root->right)) +1;
+    right->ht = max(height(right->left), height(right->right)) +1;
+    
+    return right;
+}
+
+int balancefactor(node*ans)
+{
+    if(ans==nullptr)return 0;
+    return height(ans->left) - height(ans->right);
+}
+
+node * insert(node * root,int vale)
+{
+	if(root == nullptr){
+        root = new node;
+        root->val = vale;
+        root->left = nullptr;
+        root->right = nullptr;
+        root->ht = 0;
+        return root;
+    }
+    if(root->val < vale){
+        root->right = insert(root->right,vale);
+    }
+    else if(root->val > vale){
+        root->left = insert(root->left, vale);
+    }
+    else return root;
+    
+    root->ht = 1 + max(height(root->right), height(root->left));
+    
+    int bal = balancefactor(root);
+    
+    //LL
+    if(bal>1 && vale < root->left->val )
+    {
+        return rightrotate(root);
+    }
+    
+    //LR
+    if(bal>1 && vale > root->left->val )
+    {
+        root->left = leftrotate(root->left);
+        return rightrotate(root);
+    }
+    
+    //RL
+    if(bal<-1 && vale < root->right->val)
+    {
+        root->right = rightrotate(root->right);
+        return leftrotate(root);
+    }
+    
+    //RR
+    if(bal<-1 && vale > root->right->val)
+    {
+        return leftrotate(root);
+    }
+    //cout<<balancefactor(root)<<endl;
+    
+    return root;
+}
