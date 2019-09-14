@@ -1,3 +1,13 @@
+#include<bits/stdc++.h>
+#define fork(i,n) for(i=0;i<n;i++)
+#define forz(i,z,n) for(i=z;i<=n;i++)
+using namespace std;
+#define N 100010
+
+int i,j,k;
+int st[4*N];
+int arr[N];
+
 void build(int ind,int left, int right)
 {
     if(left==right)
@@ -14,16 +24,18 @@ void build(int ind,int left, int right)
     }
 }
 
-int query(int ind, int l, int r, int left, int right)
+int query(int ind, int l, int r, int ss, int right)
 {
-    if(left>right)return INT_MAX;
+    if (right < l || left > r)  
+        return INT_MAX;  
     
-    if(l==left && r==right)
-    {
+    if (l <= left && r >= right)
         return st[ind];
-    }
-    int mid=(left+right)/2;
-    return min(query(ind*2, l, min(r,mid), left, mid),query(ind*2+1, max(l,mid+1),r, mid+1, right));
+    
+    int mid=(right+left)/2;
+    
+    return min( query(ind*2, l, min(r,mid), left, mid),
+               query(ind*2+1, max(l,mid+1),r, mid+1, right) );
 }
 
 void update(int ind, int point, int value, int left, int right)
@@ -33,6 +45,7 @@ void update(int ind, int point, int value, int left, int right)
         st[ind]=value;
         arr[left]=value;
     }
+    else{
     
     int mid=(left+right)/2;
     
@@ -42,4 +55,20 @@ void update(int ind, int point, int value, int left, int right)
     update(ind*2+1, point, value, mid+1, right);
     
     st[ind]=min(st[ind*2],st[ind*2+1]);
+        
+    }
+}
+
+int main()
+{
+    int n,m;
+    
+    cin>>n>>m;
+    
+    forz(i,1,n)cin>>arr[i];
+    
+    build(1, 1, n);
+    
+    
+    return 0;
 }
