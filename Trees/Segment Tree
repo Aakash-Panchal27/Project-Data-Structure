@@ -29,7 +29,7 @@ int query(int ind, int l, int r, int ss, int right)
     if (right < l || left > r)  
         return INT_MAX;  
     
-    if (l <= left && r >= right)
+    if (l == left && r == right)
         return st[ind];
     
     int mid=(right+left)/2;
