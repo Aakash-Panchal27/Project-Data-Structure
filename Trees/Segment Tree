@@ -24,7 +24,7 @@ void build(int ind,int left, int right)
     }
 }
 
-int query(int ind, int l, int r, int ss, int right)
+int query(int ind, int l, int r, int left, int right)
 {
     if (right < l || left > r)  
         return INT_MAX;  
