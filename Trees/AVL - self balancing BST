@@ -56,7 +56,7 @@ node * insert(node * root,int vale)
     else if(root->val > vale){
         root->left = insert(root->left, vale);
     }
-    else return root;
+   // else return root;
     
     root->ht = 1 + max(height(root->right), height(root->left));
     
