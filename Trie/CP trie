@@ -1,0 +1,93 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+struct node{
+    bool iw;
+    node* elements[26];
+    node()
+    {
+           for(int i=0;i<26;i++)
+           {
+                elements[i]=nullptr;
+           }
+           iw= false;
+    }
+};
+
+class trie{
+    public:
+    node* root;
+    trie()
+    {
+        root=new node();
+    }
+    
+    void insert(string str)
+    {
+    	node* temp = root;
+        for(int i=0;i<str.size();i++)
+        {
+        	 if(temp->elements[int(str[i]-'a')]==nullptr)
+        	 {
+        	 	temp->elements[int(str[i]-'a')] = new node();
+        	 }
+        	 temp = temp->elements[(int(str[i]-'a'))];
+        }
+        temp->iw = true;
+    }
+    
+    
+    bool src(string & str)
+    {
+    	return is_present(str, root);
+    }
+    
+    bool is_present(string& str, node* start)
+    {
+    	if(start==nullptr)return false;
+    	if(str.size()==0 && start->iw == true)return true;
+    	if(str.size() ==0 && start->iw == false) return false;
+    	string prefix = str.substr(1);
+    	return is_present(prefix, start->elements[int(str[0]-'a')]);
+    }
+    
+    void print(node* temp,string str)
+    {
+    	int i;
+    	if(temp->iw==true)cout<<str<<endl;
+    	for(i=0;i<26;i++)
+    	{
+    		if(temp->elements[i])
+    		{
+    			str+='a'+i;
+    			print(temp->elements[i],str);
+    		}
+    	}
+    }
+    
+    void printprefixes(string& str)
+    {
+    	node* temp = root;
+    	for(int i=0;i<str.size();i++)
+    	{
+    		temp=temp->elements[int(str[i]-'a')];
+    	}
+    	print(temp,str);
+    }
+    
+};
+    
+
+int main()
+{
+    trie akp;
+    akp.insert("abc");
+    akp.insert("abcded");
+    akp.insert("zcdf");
+    cout<<boolalpha;
+    string sec="a";
+	akp.printprefixes(sec);
+    
+    return 0;
+}
