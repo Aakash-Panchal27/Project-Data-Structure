@@ -1,0 +1,181 @@
+#include <bits/stdc++.h>
+#define f(i,n) for(int i=0;i<n;i++)
+using namespace std;
+#define ll long long
+
+class node{
+	public:
+	int ans;
+	map<int, int> elements;
+	
+	node(int val,int id)
+	{
+		ans = -1;
+		elements[val]=id;
+	}
+	
+	node()
+	{
+		ans = -1;
+	}
+};
+
+template<typename T, typename S>
+class segment_tree{
+	public:
+	
+	int n, nodeid;
+	vector<T> tree;
+	vector<T> lazy;
+	vector<bool> islazy;
+	
+	segment_tree(vector<int> &vector)
+	{
+		n = vector.size();
+		tree.assign(n * 4 + 4, node());
+		lazy.assign(n * 4 + 4);
+		islazy.assign(n * 4 + 4, false);
+		nodeid = 0;
+		build(0, 0, n-1, vector);
+	}
+	
+	void build(int nodeid, int l, int r, vector<int> & vec)
+	{
+		if(l > r)
+		return;
+		
+		if(l == r)
+		{
+			tree[nodeid] = node(vec[l], l);	
+			return;
+		}
+		
+		int mid = (l + r) / 2;
+		
+		build(nodeid * 2 + 1, l, mid, vec);
+		build(nodeid * 2 + 2, mid + 1, r, vec);
+		
+		merge(tree[nodeid], tree[nodeid * 2 + 1], tree[nodeid * 2 + 2]);
+	}
+	
+	void merge(T & data, T left, T right)
+	{
+		map<int,int>::iterator predict;
+		
+		if(left.ans!=-1 && right.ans!=-1)
+			data.ans=min(left.ans,right.ans);
+		else if(left.ans!=-1)
+			data.ans=left.ans;
+		else
+			data.ans=right.ans;
+			
+		for(auto it: left.elements)
+		{
+			predict = right.elements.find(it.first);
+			if(predict == right.elements.end()) {
+				data.elements[it.first]=it.second;
+			}
+			else {
+				
+				if(data.ans == -1)
+					data.ans = abs(it.second - predict->second);
+				else 
+					data.ans = min(data.ans, abs(it.second - predict->second));
+			}
+		}
+		
+		for(auto it: right.elements)
+		{
+			predict = left.elements.find(it.first);
+			if(predict == left.elements.end()) {
+				
+				data.elements[it.first]=it.second;
+			}
+			else {
+				
+				if(data.ans == -1)
+					data.ans = abs(it.second - predict->second);
+				else 
+					data.ans = min(data.ans, abs(it.second - predict->second));
+			}
+		}
+	}
+	
+	void propagate(int nodeid)
+	{
+		tree[nodeid * 2 + 1] = tree[nodeid];
+		tree[nodeid * 2 + 2] = tree[nodeid];
+		tree[nodeid] = 0;
+		islazy[nodeid] = false;
+	}
+	
+	void rangeupdate(int nodeid, int l, int r, int ql, int qr, int update)
+	{
+		if(islazy[nodeid])
+		{
+			propagate(nodeid);
+		}
+		
+		if(l > r || r < ql || l > qr)
+		{
+			return;
+		}
+		
+		if(l == ql && r == qr)
+		{
+			if(islazy[nodeid])
+			{
+				propagate(nodeid);
+			}
+			islazy[nodeid] = true;
+			tree[nodeid] = update;
+			return;
+		}
+		
+		int mid = (l + r) / 2;
+		rangeupdate(nodeid * 2 + 1, l, mid, ql, min(qr, mid), update);
+		rangeupdate(nodeid * 2 + 2, mid+1, r, max(ql, mid+1), qr, update);
+	}
+	
+	
+	T rangequery(int nodeid, int l, int r, int ql, int qr)
+	{
+		if(l > r || l > qr || r < ql)
+		{
+			T temp = node();
+			return temp;
+		}
+		
+		if(l == ql && r == qr)
+		{
+			return tree[nodeid];
+		}
+		
+		int mid = (l + r) / 2;
+		
+		T data = node();
+		
+		merge(data, rangequery(nodeid * 2 + 1, l, mid, ql, min(qr, mid))
+		,rangequery(nodeid * 2 + 2, mid + 1, r, max(ql, mid + 1), qr));
+		
+		return data;
+		
+	}
+	
+};
+
+int main() {
+	int n,m,l,r;
+	cin>>n>>m;
+	vector<int> vec(n);
+	f(i,n)cin>>vec[i];
+	segment_tree<node, int> seg = segment_tree<node,int>(vec);
+	while(m--)
+	{
+		cin>>l>>r;
+		--l,--r;
+		node ans = seg.rangequery(0,0,n-1,l,r);
+		cout<<ans.ans<<endl;
+	}
+	return 0;
+}
